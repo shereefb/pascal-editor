@@ -1,6 +1,6 @@
 import { type BeamNode, useRegistry } from '@pascal-app/core'
 import { useMemo, useRef } from 'react'
-import type { Group } from 'three'
+import type { Mesh } from 'three'
 import { useNodeEvents } from '../../../hooks/use-node-events'
 import { getUtilizationColor } from '../frame/utilization-color'
 
@@ -20,7 +20,7 @@ const getBeamSection = (designation?: string): [number, number] => {
 }
 
 export const BeamRenderer = ({ node }: { node: BeamNode }) => {
-  const ref = useRef<Group>(null!)
+  const ref = useRef<Mesh>(null!)
 
   useRegistry(node.id, 'beam', ref)
 
@@ -40,25 +40,25 @@ export const BeamRenderer = ({ node }: { node: BeamNode }) => {
     const midZ = (node.start[1] + node.end[1]) / 2
     const y = CEILING_HEIGHT - height / 2
 
-    return { width, height, length, angle, midX, midZ, y }
+    // Use minimum clickable dimensions so thin beams are easier to select
+    const clickableWidth = Math.max(width, 0.15)
+    const clickableHeight = Math.max(height, 0.15)
+
+    return { width: clickableWidth, height: clickableHeight, length, angle, midX, midZ, y }
   }, [node.start, node.end, node.designation, node.plyCount])
 
   return (
-    <group
+    <mesh
+      castShadow
+      receiveShadow
       ref={ref}
       position={[geometry.midX, geometry.y, geometry.midZ]}
       rotation={[0, geometry.angle, 0]}
       visible={node.visible}
+      {...handlers}
     >
-      {/* Visible beam */}
-      <mesh castShadow receiveShadow>
-        <boxGeometry args={[geometry.width, geometry.height, geometry.length]} />
-        <meshStandardMaterial color={color} transparent opacity={0.6} />
-      </mesh>
-      {/* Larger invisible collision mesh for easier selection */}
-      <mesh visible={false} {...handlers}>
-        <boxGeometry args={[Math.max(geometry.width, 0.15), Math.max(geometry.height, 0.15), geometry.length]} />
-      </mesh>
-    </group>
+      <boxGeometry args={[geometry.width, geometry.height, geometry.length]} />
+      <meshStandardMaterial color={color} transparent opacity={0.6} />
+    </mesh>
   )
 }

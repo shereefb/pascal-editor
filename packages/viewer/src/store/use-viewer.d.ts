@@ -1,5 +1,10 @@
 import type { AnyNode, BaseNode, BuildingNode, LevelNode, ZoneNode } from '@pascal-app/core'
 import type { Object3D } from 'three'
+
+export declare const ARCHITECTURE_NODE_TYPES: Set<string>
+export declare const FRAME_NODE_TYPES: Set<string>
+export type ActivePhase = 'site' | 'structure' | 'frame' | 'furnish'
+
 type SelectionPath = {
   buildingId: BuildingNode['id'] | null
   levelId: LevelNode['id'] | null
@@ -24,6 +29,8 @@ type ViewerState = {
   setShowScans: (show: boolean) => void
   showGuides: boolean
   setShowGuides: (show: boolean) => void
+  activePhase: ActivePhase
+  setActivePhase: (phase: ActivePhase) => void
   setSelection: (updates: Partial<SelectionPath>) => void
   resetSelection: () => void
   outliner: Outliner

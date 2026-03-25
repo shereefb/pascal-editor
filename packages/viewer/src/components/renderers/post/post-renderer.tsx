@@ -1,6 +1,6 @@
 import { type PostNode, useRegistry } from '@pascal-app/core'
 import { useMemo, useRef } from 'react'
-import type { Group } from 'three'
+import type { Mesh } from 'three'
 import { useNodeEvents } from '../../../hooks/use-node-events'
 import { getUtilizationColor } from '../frame/utilization-color'
 
@@ -16,7 +16,7 @@ const getPostSize = (designation?: string): number => {
 }
 
 export const PostRenderer = ({ node }: { node: PostNode }) => {
-  const ref = useRef<Group>(null!)
+  const ref = useRef<Mesh>(null!)
 
   useRegistry(node.id, 'post', ref)
 
@@ -26,24 +26,20 @@ export const PostRenderer = ({ node }: { node: PostNode }) => {
   const height = node.height ?? 2.5
   const color = getUtilizationColor(node.metadata as Record<string, unknown> | undefined, POST_COLOR)
 
-  // Collision mesh is at least 0.15m for easier clicking
-  const collisionSize = Math.max(size, 0.15)
+  // Use a minimum clickable size so thin posts are easier to select
+  const clickableSize = Math.max(size, 0.15)
 
   return (
-    <group
+    <mesh
+      castShadow
+      receiveShadow
       ref={ref}
       position={[node.position[0], height / 2, node.position[1]]}
       visible={node.visible}
+      {...handlers}
     >
-      {/* Visible post */}
-      <mesh castShadow receiveShadow>
-        <boxGeometry args={[size, height, size]} />
-        <meshStandardMaterial color={color} transparent opacity={0.6} />
-      </mesh>
-      {/* Larger invisible collision mesh for easier selection */}
-      <mesh visible={false} {...handlers}>
-        <boxGeometry args={[collisionSize, height, collisionSize]} />
-      </mesh>
-    </group>
+      <boxGeometry args={[clickableSize, height, clickableSize]} />
+      <meshStandardMaterial color={color} transparent opacity={0.6} />
+    </mesh>
   )
 }

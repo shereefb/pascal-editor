@@ -18,10 +18,23 @@ type Outliner = {
   hoveredObjects: Object3D[]
 }
 
+// Node types that belong to each phase
+export const ARCHITECTURE_NODE_TYPES = new Set([
+  'wall', 'slab', 'ceiling', 'roof', 'roof-segment', 'door', 'window', 'item',
+])
+export const FRAME_NODE_TYPES = new Set([
+  'post', 'beam', 'header', 'joist', 'shear-wall', 'bracing', 'hold-down',
+])
+
+export type ActivePhase = 'site' | 'structure' | 'frame' | 'furnish'
+
 type ViewerState = {
   selection: SelectionPath
   hoveredId: AnyNode['id'] | ZoneNode['id'] | null
   setHoveredId: (id: AnyNode['id'] | ZoneNode['id'] | null) => void
+
+  activePhase: ActivePhase
+  setActivePhase: (phase: ActivePhase) => void
 
   cameraMode: 'perspective' | 'orthographic'
   setCameraMode: (mode: 'perspective' | 'orthographic') => void
@@ -77,6 +90,9 @@ const useViewer = create<ViewerState>()(
       selection: { buildingId: null, levelId: null, zoneId: null, selectedIds: [] },
       hoveredId: null,
       setHoveredId: (id) => set({ hoveredId: id }),
+
+      activePhase: 'site' as ActivePhase,
+      setActivePhase: (phase) => set({ activePhase: phase }),
 
       cameraMode: 'perspective',
       setCameraMode: (mode) => set({ cameraMode: mode }),

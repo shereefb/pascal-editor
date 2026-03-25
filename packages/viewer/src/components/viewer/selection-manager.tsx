@@ -234,15 +234,11 @@ const getStrategy = (): SelectionStrategy | null => {
   const { activePhase } = useViewer.getState()
 
   if (!zoneId) {
-    // Frame elements (post, beam, header, etc.) are always directly selectable
-    // on the level — no zone required, regardless of active phase.
-    // Architecture elements (wall, slab, etc.) require zone selection first.
-    const frameTypes: SelectableNodeType[] = [
-      'post', 'beam', 'header', 'joist', 'shear-wall', 'bracing', 'hold-down',
-    ]
-
+    // In frame phase, allow direct element selection on the level (no zone required)
     if (activePhase === 'frame') {
-      // In frame phase, only frame elements are selectable
+      const frameTypes: SelectableNodeType[] = [
+        'post', 'beam', 'header', 'joist', 'shear-wall', 'bracing', 'hold-down',
+      ]
       return {
         types: frameTypes,
         handleClick: (node, nativeEvent) => {
@@ -266,35 +262,16 @@ const getStrategy = (): SelectionStrategy | null => {
       }
     }
 
-    // In other phases, allow both zone selection AND frame element selection.
-    // Clicking a zone selects it (enters zone context for architecture elements).
-    // Clicking a frame element selects it directly (no zone needed).
+    // In other phases, select zones first
     return {
-      types: ['zone', ...frameTypes],
-      handleClick: (node, nativeEvent) => {
-        if (node.type === 'zone') {
-          useViewer.getState().setSelection({ zoneId: (node as ZoneNode).id })
-        } else {
-          // Frame element — direct selection
-          const { selectedIds } = useViewer.getState().selection
-          useViewer
-            .getState()
-            .setSelection({ selectedIds: computeNextIds(node, selectedIds, nativeEvent) })
-        }
+      types: ['zone'],
+      handleClick: (node) => {
+        useViewer.getState().setSelection({ zoneId: (node as ZoneNode).id })
       },
       handleDeselect: () => {
-        const { selectedIds } = useViewer.getState().selection
-        if (selectedIds.length > 0) {
-          useViewer.getState().setSelection({ selectedIds: [] })
-        } else {
-          useViewer.getState().setSelection({ levelId: null })
-        }
+        useViewer.getState().setSelection({ levelId: null })
       },
-      isValid: (node) => {
-        if (node.type === 'zone') return node.parentId === levelId
-        if (frameTypes.includes(node.type as SelectableNodeType)) return isNodeOnLevel(node, levelId)
-        return false
-      },
+      isValid: (node) => node.type === 'zone' && node.parentId === levelId,
     }
   }
 
