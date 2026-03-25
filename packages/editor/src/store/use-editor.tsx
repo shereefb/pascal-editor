@@ -16,7 +16,7 @@ import { useViewer } from '@pascal-app/viewer'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-export type Phase = 'site' | 'structure' | 'furnish'
+export type Phase = 'site' | 'structure' | 'frame' | 'furnish'
 
 export type Mode = 'select' | 'edit' | 'delete' | 'build'
 
@@ -34,6 +34,16 @@ export type StructureTool =
   | 'zone'
   | 'window'
   | 'door'
+
+// Frame mode tools (structural framing elements)
+export type FrameTool =
+  | 'post'
+  | 'beam'
+  | 'header'
+  | 'joist'
+  | 'shear-wall'
+  | 'bracing'
+  | 'hold-down'
 
 // Furnish mode tools (items and decoration)
 export type FurnishTool = 'item'
@@ -54,7 +64,7 @@ export type CatalogCategory =
 export type StructureLayer = 'zones' | 'elements'
 
 // Combined tool type
-export type Tool = SiteTool | StructureTool | FurnishTool
+export type Tool = SiteTool | StructureTool | FrameTool | FurnishTool
 
 type EditorState = {
   phase: Phase
