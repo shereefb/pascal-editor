@@ -2,6 +2,9 @@ import { type PostNode, useRegistry } from '@pascal-app/core'
 import { useMemo, useRef } from 'react'
 import type { Mesh } from 'three'
 import { useNodeEvents } from '../../../hooks/use-node-events'
+import { getUtilizationColor } from '../frame/utilization-color'
+
+const POST_COLOR = '#C4A055'
 
 /** Map post designation to cross-section size in meters */
 const getPostSize = (designation?: string): number => {
@@ -21,6 +24,7 @@ export const PostRenderer = ({ node }: { node: PostNode }) => {
 
   const size = useMemo(() => getPostSize(node.designation), [node.designation])
   const height = node.height ?? 2.5
+  const color = getUtilizationColor(node.metadata as Record<string, unknown> | undefined, POST_COLOR)
 
   return (
     <mesh
@@ -32,7 +36,7 @@ export const PostRenderer = ({ node }: { node: PostNode }) => {
       {...handlers}
     >
       <boxGeometry args={[size, height, size]} />
-      <meshStandardMaterial color="#C4A055" transparent opacity={0.6} />
+      <meshStandardMaterial color={color} transparent opacity={0.6} />
     </mesh>
   )
 }

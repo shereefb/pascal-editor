@@ -2,6 +2,9 @@ import { type BeamNode, useRegistry } from '@pascal-app/core'
 import { useMemo, useRef } from 'react'
 import type { Mesh } from 'three'
 import { useNodeEvents } from '../../../hooks/use-node-events'
+import { getUtilizationColor } from '../frame/utilization-color'
+
+const BEAM_COLOR = '#C4A055'
 
 const CEILING_HEIGHT = 2.5
 
@@ -22,6 +25,7 @@ export const BeamRenderer = ({ node }: { node: BeamNode }) => {
   useRegistry(node.id, 'beam', ref)
 
   const handlers = useNodeEvents(node, 'beam')
+  const color = getUtilizationColor(node.metadata as Record<string, unknown> | undefined, BEAM_COLOR)
 
   const geometry = useMemo(() => {
     const [singleWidth, height] = getBeamSection(node.designation)
@@ -50,7 +54,7 @@ export const BeamRenderer = ({ node }: { node: BeamNode }) => {
       {...handlers}
     >
       <boxGeometry args={[geometry.width, geometry.height, geometry.length]} />
-      <meshStandardMaterial color="#C4A055" transparent opacity={0.6} />
+      <meshStandardMaterial color={color} transparent opacity={0.6} />
     </mesh>
   )
 }

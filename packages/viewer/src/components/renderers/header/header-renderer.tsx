@@ -2,6 +2,9 @@ import { type HeaderNode, useRegistry } from '@pascal-app/core'
 import { useMemo, useRef } from 'react'
 import type { Mesh } from 'three'
 import { useNodeEvents } from '../../../hooks/use-node-events'
+import { getUtilizationColor } from '../frame/utilization-color'
+
+const HEADER_COLOR = '#C4A055'
 
 const CEILING_HEIGHT = 2.5
 
@@ -21,6 +24,7 @@ export const HeaderRenderer = ({ node }: { node: HeaderNode }) => {
   useRegistry(node.id, 'header', ref)
 
   const handlers = useNodeEvents(node, 'header')
+  const color = getUtilizationColor(node.metadata as Record<string, unknown> | undefined, HEADER_COLOR)
 
   const geometry = useMemo(() => {
     const [singleWidth, height] = getHeaderSection(node.designation)
@@ -50,7 +54,7 @@ export const HeaderRenderer = ({ node }: { node: HeaderNode }) => {
       {...handlers}
     >
       <boxGeometry args={[geometry.width, geometry.height, geometry.length]} />
-      <meshStandardMaterial color="#C4A055" transparent opacity={0.6} />
+      <meshStandardMaterial color={color} transparent opacity={0.6} />
     </mesh>
   )
 }
