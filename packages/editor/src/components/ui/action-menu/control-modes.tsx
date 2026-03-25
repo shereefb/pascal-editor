@@ -72,6 +72,7 @@ const allModes: ModeConfig[] = [
 const modesByPhase: Record<Phase, Mode[]> = {
   site: ['select', 'edit'],
   structure: ['select', 'delete', 'build'],
+  frame: ['select', 'delete', 'build'],
   furnish: ['select', 'delete', 'build'],
 }
 
