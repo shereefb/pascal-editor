@@ -22,6 +22,13 @@ export const sceneRegistry = {
     guide: new Set<string>(),
     window: new Set<string>(),
     door: new Set<string>(),
+    post: new Set<string>(),
+    beam: new Set<string>(),
+    header: new Set<string>(),
+    joist: new Set<string>(),
+    'shear-wall': new Set<string>(),
+    bracing: new Set<string>(),
+    'hold-down': new Set<string>(),
   },
 
   /** Remove all entries. Call when unloading a scene to prevent stale 3D refs. */

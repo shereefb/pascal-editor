@@ -1,13 +1,20 @@
 import type { ThreeEvent } from '@react-three/fiber'
 import mitt from 'mitt'
 import type {
+  BeamNode,
+  BracingNode,
   BuildingNode,
   CeilingNode,
   DoorNode,
+  HeaderNode,
+  HoldDownNode,
   ItemNode,
+  JoistNode,
   LevelNode,
+  PostNode,
   RoofNode,
   RoofSegmentNode,
+  ShearWallNode,
   SiteNode,
   SlabNode,
   WallNode,
@@ -43,6 +50,13 @@ export type RoofEvent = NodeEvent<RoofNode>
 export type RoofSegmentEvent = NodeEvent<RoofSegmentNode>
 export type WindowEvent = NodeEvent<WindowNode>
 export type DoorEvent = NodeEvent<DoorNode>
+export type PostEvent = NodeEvent<PostNode>
+export type BeamEvent = NodeEvent<BeamNode>
+export type HeaderEvent = NodeEvent<HeaderNode>
+export type JoistEvent = NodeEvent<JoistNode>
+export type ShearWallEvent = NodeEvent<ShearWallNode>
+export type BracingEvent = NodeEvent<BracingNode>
+export type HoldDownEvent = NodeEvent<HoldDownNode>
 
 // Event suffixes - exported for use in hooks
 export const eventSuffixes = [
@@ -106,6 +120,13 @@ type EditorEvents = GridEvents &
   NodeEvents<'roof-segment', RoofSegmentEvent> &
   NodeEvents<'window', WindowEvent> &
   NodeEvents<'door', DoorEvent> &
+  NodeEvents<'post', PostEvent> &
+  NodeEvents<'beam', BeamEvent> &
+  NodeEvents<'header', HeaderEvent> &
+  NodeEvents<'joist', JoistEvent> &
+  NodeEvents<'shear-wall', ShearWallEvent> &
+  NodeEvents<'bracing', BracingEvent> &
+  NodeEvents<'hold-down', HoldDownEvent> &
   CameraControlEvents &
   ToolEvents &
   PresetEvents

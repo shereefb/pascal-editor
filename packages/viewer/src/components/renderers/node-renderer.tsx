@@ -1,15 +1,22 @@
 'use client'
 
 import { type AnyNode, useScene } from '@pascal-app/core'
+import { BeamRenderer } from './beam/beam-renderer'
+import { BracingRenderer } from './bracing/bracing-renderer'
 import { BuildingRenderer } from './building/building-renderer'
 import { CeilingRenderer } from './ceiling/ceiling-renderer'
 import { DoorRenderer } from './door/door-renderer'
 import { GuideRenderer } from './guide/guide-renderer'
+import { HeaderRenderer } from './header/header-renderer'
+import { HoldDownRenderer } from './hold-down/hold-down-renderer'
 import { ItemRenderer } from './item/item-renderer'
+import { JoistRenderer } from './joist/joist-renderer'
 import { LevelRenderer } from './level/level-renderer'
+import { PostRenderer } from './post/post-renderer'
 import { RoofRenderer } from './roof/roof-renderer'
 import { RoofSegmentRenderer } from './roof-segment/roof-segment-renderer'
 import { ScanRenderer } from './scan/scan-renderer'
+import { ShearWallRenderer } from './shear-wall/shear-wall-renderer'
 import { SiteRenderer } from './site/site-renderer'
 import { SlabRenderer } from './slab/slab-renderer'
 import { WallRenderer } from './wall/wall-renderer'
@@ -37,6 +44,13 @@ export const NodeRenderer = ({ nodeId }: { nodeId: AnyNode['id'] }) => {
       {node.type === 'roof-segment' && <RoofSegmentRenderer node={node} />}
       {node.type === 'scan' && <ScanRenderer node={node} />}
       {node.type === 'guide' && <GuideRenderer node={node} />}
+      {node.type === 'post' && <PostRenderer node={node} />}
+      {node.type === 'beam' && <BeamRenderer node={node} />}
+      {node.type === 'header' && <HeaderRenderer node={node} />}
+      {node.type === 'joist' && <JoistRenderer node={node} />}
+      {node.type === 'shear-wall' && <ShearWallRenderer node={node} />}
+      {node.type === 'bracing' && <BracingRenderer node={node} />}
+      {node.type === 'hold-down' && <HoldDownRenderer node={node} />}
     </>
   )
 }

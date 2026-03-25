@@ -1,4 +1,8 @@
 import {
+  type BeamEvent,
+  type BeamNode,
+  type BracingEvent,
+  type BracingNode,
   type BuildingEvent,
   type BuildingNode,
   type CeilingEvent,
@@ -6,15 +10,24 @@ import {
   type DoorEvent,
   type DoorNode,
   type EventSuffix,
-  emitter,
+  type HeaderEvent,
+  type HeaderNode,
+  type HoldDownEvent,
+  type HoldDownNode,
   type ItemEvent,
   type ItemNode,
+  type JoistEvent,
+  type JoistNode,
   type LevelEvent,
   type LevelNode,
+  type PostEvent,
+  type PostNode,
   type RoofEvent,
   type RoofNode,
   type RoofSegmentEvent,
   type RoofSegmentNode,
+  type ShearWallEvent,
+  type ShearWallNode,
   type SiteEvent,
   type SiteNode,
   type SlabEvent,
@@ -25,6 +38,7 @@ import {
   type WindowNode,
   type ZoneEvent,
   type ZoneNode,
+  emitter,
 } from '@pascal-app/core'
 import type { ThreeEvent } from '@react-three/fiber'
 import useViewer from '../store/use-viewer'
@@ -42,6 +56,13 @@ type NodeConfig = {
   'roof-segment': { node: RoofSegmentNode; event: RoofSegmentEvent }
   window: { node: WindowNode; event: WindowEvent }
   door: { node: DoorNode; event: DoorEvent }
+  post: { node: PostNode; event: PostEvent }
+  beam: { node: BeamNode; event: BeamEvent }
+  header: { node: HeaderNode; event: HeaderEvent }
+  joist: { node: JoistNode; event: JoistEvent }
+  'shear-wall': { node: ShearWallNode; event: ShearWallEvent }
+  bracing: { node: BracingNode; event: BracingEvent }
+  'hold-down': { node: HoldDownNode; event: HoldDownEvent }
 }
 
 type NodeType = keyof NodeConfig
