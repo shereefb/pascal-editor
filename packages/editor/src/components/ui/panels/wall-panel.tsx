@@ -68,6 +68,22 @@ export function WallPanel() {
         />
       </PanelSection>
 
+      <PanelSection title="Structural">
+        <div className="flex items-center justify-between px-2 py-1 text-sm">
+          <span className="text-muted-foreground">Role</span>
+          <select
+            aria-label="Structural role"
+            className="rounded border border-border bg-background px-2 py-1 font-mono text-sm"
+            onChange={(e) => handleUpdate({ structuralRole: e.target.value as WallNode['structuralRole'] })}
+            value={node.structuralRole ?? 'unknown'}
+          >
+            <option value="unknown">Unknown</option>
+            <option value="bearing">Bearing</option>
+            <option value="partition">Partition</option>
+          </select>
+        </div>
+      </PanelSection>
+
       <PanelSection title="Info">
         <div className="flex items-center justify-between px-2 py-1 text-muted-foreground text-sm">
           <span>Length</span>

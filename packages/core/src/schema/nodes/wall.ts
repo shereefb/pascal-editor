@@ -19,6 +19,8 @@ export const WallNode = BaseNode.extend({
   // Space detection for cutaway mode
   frontSide: z.enum(['interior', 'exterior', 'unknown']).default('unknown'),
   backSide: z.enum(['interior', 'exterior', 'unknown']).default('unknown'),
+  // Structural classification — set by auto-detection or user override
+  structuralRole: z.enum(['bearing', 'partition', 'unknown']).default('unknown'),
 }).describe(
   dedent`
   Wall node - used to represent a wall in the building
@@ -29,6 +31,7 @@ export const WallNode = BaseNode.extend({
   - size: size of the wall in grid units
   - frontSide: whether the front side faces interior, exterior, or unknown
   - backSide: whether the back side faces interior, exterior, or unknown
+  - structuralRole: bearing (carries load from above), partition (non-structural), or unknown
   `,
 )
 export type WallNode = z.infer<typeof WallNode>
