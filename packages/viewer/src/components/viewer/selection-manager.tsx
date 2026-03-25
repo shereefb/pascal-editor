@@ -17,7 +17,7 @@ import {
 import { useThree } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import { Vector3 } from 'three'
-import useViewer from '../../store/use-viewer'
+import useViewer, { ARCHITECTURE_NODE_TYPES, FRAME_NODE_TYPES } from '../../store/use-viewer'
 
 const tempWorldPos = new Vector3()
 
@@ -36,6 +36,13 @@ type SelectableNodeType =
   | 'ceiling'
   | 'roof'
   | 'roof-segment'
+  | 'post'
+  | 'beam'
+  | 'header'
+  | 'joist'
+  | 'shear-wall'
+  | 'bracing'
+  | 'hold-down'
 
 // Expand polygon outward by a small amount to include items on edges
 const expandPolygon = (polygon: [number, number][], tolerance: number): [number, number][] => {
@@ -157,6 +164,24 @@ const isNodeInZone = (node: AnyNode, levelId: string, zoneId: string): boolean =
     return true
   }
 
+  // Frame elements: post has position [x, z], linear elements have start/end [x, z]
+  if (node.type === 'post') {
+    const post = node as { position: [number, number] }
+    if (post.position) {
+      return pointInPolygonWithTolerance(post.position[0], post.position[1], zone.polygon)
+    }
+  }
+
+  const linearFrameTypes = ['beam', 'header', 'joist', 'shear-wall', 'bracing', 'hold-down']
+  if (linearFrameTypes.includes(node.type)) {
+    const linear = node as { start?: [number, number]; end?: [number, number] }
+    if (linear.start && linear.end) {
+      const startIn = pointInPolygonWithTolerance(linear.start[0], linear.start[1], zone.polygon)
+      const endIn = pointInPolygonWithTolerance(linear.end[0], linear.end[1], zone.polygon)
+      return startIn || endIn
+    }
+  }
+
   return false
 }
 
@@ -205,23 +230,90 @@ const getStrategy = (): SelectionStrategy | null => {
     }
   }
 
-  // Level selected, no zone -> can select zones (only zones on the selected level)
+  // Level selected, no zone
+  const { activePhase } = useViewer.getState()
+
   if (!zoneId) {
+    // Frame elements (post, beam, header, etc.) are always directly selectable
+    // on the level — no zone required, regardless of active phase.
+    // Architecture elements (wall, slab, etc.) require zone selection first.
+    const frameTypes: SelectableNodeType[] = [
+      'post', 'beam', 'header', 'joist', 'shear-wall', 'bracing', 'hold-down',
+    ]
+
+    if (activePhase === 'frame') {
+      // In frame phase, only frame elements are selectable
+      return {
+        types: frameTypes,
+        handleClick: (node, nativeEvent) => {
+          const { selectedIds } = useViewer.getState().selection
+          useViewer
+            .getState()
+            .setSelection({ selectedIds: computeNextIds(node, selectedIds, nativeEvent) })
+        },
+        handleDeselect: () => {
+          const { selectedIds } = useViewer.getState().selection
+          if (selectedIds.length > 0) {
+            useViewer.getState().setSelection({ selectedIds: [] })
+          } else {
+            useViewer.getState().setSelection({ levelId: null })
+          }
+        },
+        isValid: (node) => {
+          if (!frameTypes.includes(node.type as SelectableNodeType)) return false
+          return isNodeOnLevel(node, levelId)
+        },
+      }
+    }
+
+    // In other phases, allow both zone selection AND frame element selection.
+    // Clicking a zone selects it (enters zone context for architecture elements).
+    // Clicking a frame element selects it directly (no zone needed).
     return {
-      types: ['zone'],
-      handleClick: (node) => {
-        useViewer.getState().setSelection({ zoneId: (node as ZoneNode).id })
+      types: ['zone', ...frameTypes],
+      handleClick: (node, nativeEvent) => {
+        if (node.type === 'zone') {
+          useViewer.getState().setSelection({ zoneId: (node as ZoneNode).id })
+        } else {
+          // Frame element — direct selection
+          const { selectedIds } = useViewer.getState().selection
+          useViewer
+            .getState()
+            .setSelection({ selectedIds: computeNextIds(node, selectedIds, nativeEvent) })
+        }
       },
       handleDeselect: () => {
-        useViewer.getState().setSelection({ levelId: null })
+        const { selectedIds } = useViewer.getState().selection
+        if (selectedIds.length > 0) {
+          useViewer.getState().setSelection({ selectedIds: [] })
+        } else {
+          useViewer.getState().setSelection({ levelId: null })
+        }
       },
-      isValid: (node) => node.type === 'zone' && node.parentId === levelId,
+      isValid: (node) => {
+        if (node.type === 'zone') return node.parentId === levelId
+        if (frameTypes.includes(node.type as SelectableNodeType)) return isNodeOnLevel(node, levelId)
+        return false
+      },
     }
   }
 
-  // Zone selected -> can select/hover contents (walls, items, slabs, ceilings, roofs, windows, doors)
+  // Zone selected -> can select/hover contents filtered by active phase
+  // (activePhase already read above)
+
+  // Determine which node types are selectable based on the active phase
+  const allElementTypes: SelectableNodeType[] = [
+    'wall', 'item', 'slab', 'ceiling', 'roof', 'roof-segment', 'window', 'door',
+    'post', 'beam', 'header', 'joist', 'shear-wall', 'bracing', 'hold-down',
+  ]
+  const phaseFilteredTypes = allElementTypes.filter((t) => {
+    if (activePhase === 'structure') return ARCHITECTURE_NODE_TYPES.has(t)
+    if (activePhase === 'frame') return FRAME_NODE_TYPES.has(t)
+    return true // site/furnish: all types selectable
+  })
+
   return {
-    types: ['wall', 'item', 'slab', 'ceiling', 'roof', 'roof-segment', 'window', 'door'],
+    types: phaseFilteredTypes,
     handleClick: (node, nativeEvent) => {
       let nodeToSelect = node
       if (node.type === 'roof-segment' && node.parentId) {
@@ -246,17 +338,7 @@ const getStrategy = (): SelectionStrategy | null => {
       }
     },
     isValid: (node) => {
-      const validTypes = [
-        'wall',
-        'item',
-        'slab',
-        'ceiling',
-        'roof',
-        'roof-segment',
-        'window',
-        'door',
-      ]
-      if (!validTypes.includes(node.type)) return false
+      if (!phaseFilteredTypes.includes(node.type as SelectableNodeType)) return false
       return isNodeInZone(node, levelId, zoneId)
     },
   }
@@ -297,7 +379,7 @@ export const SelectionManager = () => {
       useViewer.setState({ hoveredId: null })
     }
 
-    // Subscribe to all node types
+    // Subscribe to all node types (including frame types)
     const allTypes: SelectableNodeType[] = [
       'building',
       'level',
@@ -310,6 +392,13 @@ export const SelectionManager = () => {
       'roof-segment',
       'window',
       'door',
+      'post',
+      'beam',
+      'header',
+      'joist',
+      'shear-wall',
+      'bracing',
+      'hold-down',
     ]
     for (const type of allTypes) {
       emitter.on(`${type}:enter`, onEnter)
