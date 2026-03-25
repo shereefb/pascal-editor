@@ -859,6 +859,13 @@ function LevelsSection({
   )
 }
 
+/**
+ * UI label → code phase mapping:
+ *   "Architecture" tab → phase='structure' (building envelope: walls, slabs, roofs, doors, windows)
+ *   "Structural" tab   → phase='frame'     (engineering framing: posts, beams, joists, shear walls)
+ *   "Furnish" tab      → phase='furnish'   (hidden — furniture/items)
+ *   "Zones" tab        → phase='structure', structureLayer='zones' (hidden — interior zones)
+ */
 function LayerToggle() {
   const structureLayer = useEditor((state) => state.structureLayer)
   const setStructureLayer = useEditor((state) => state.setStructureLayer)
@@ -899,14 +906,15 @@ function LayerToggle() {
         )}
         <div className="relative z-10 flex flex-col items-center">
           <img
-            alt="Structure"
+            alt="Architecture"
             className={cn(
               'mb-1 h-6 w-6 transition-all',
               activeTab !== 'structure' && 'opacity-50 grayscale',
             )}
             src="/icons/room.png"
           />
-          Structure
+          {/* UI label "Architecture" maps to phase='structure' in code */}
+          Architecture
         </div>
         <div className="absolute right-1.5 bottom-1 z-10 rounded border border-white/20 bg-white/10 px-1 py-[2px]">
           <span className="block font-medium font-mono text-[9px] text-white/60 leading-none">
@@ -935,14 +943,15 @@ function LayerToggle() {
         )}
         <div className="relative z-10 flex flex-col items-center">
           <img
-            alt="Frame"
+            alt="Structural"
             className={cn(
               'mb-1 h-6 w-6 transition-all',
               activeTab !== 'frame' && 'opacity-50 grayscale',
             )}
             src="/icons/column.png"
           />
-          Frame
+          {/* UI label "Structural" maps to phase='frame' in code */}
+          Structural
         </div>
         <div className="absolute right-1.5 bottom-1 z-10 rounded border border-white/20 bg-white/10 px-1 py-[2px]">
           <span className="block font-medium font-mono text-[9px] text-white/60 leading-none">
@@ -951,78 +960,7 @@ function LayerToggle() {
         </div>
       </button>
 
-      <button
-        className={cn(
-          'relative flex flex-1 cursor-pointer flex-col items-center justify-center rounded-md py-2 font-medium text-[10px] transition-all duration-200',
-          activeTab === 'furnish'
-            ? 'text-foreground'
-            : 'text-muted-foreground hover:bg-white/5 hover:text-foreground',
-        )}
-        onClick={() => {
-          setPhase('furnish')
-        }}
-      >
-        {activeTab === 'furnish' && (
-          <motion.div
-            className="absolute inset-0 rounded-md bg-[#3e3e3e] shadow-sm ring-1 ring-border/50"
-            layoutId="layerToggleActiveBg"
-            transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
-          />
-        )}
-        <div className="relative z-10 flex flex-col items-center">
-          <img
-            alt="Furnish"
-            className={cn(
-              'mb-1 h-6 w-6 transition-all',
-              activeTab !== 'furnish' && 'opacity-50 grayscale',
-            )}
-            src="/icons/couch.png"
-          />
-          Furnish
-        </div>
-        <div className="absolute right-1.5 bottom-1 z-10 rounded border border-white/20 bg-white/10 px-1 py-[2px]">
-          <span className="block font-medium font-mono text-[9px] text-white/60 leading-none">
-            F
-          </span>
-        </div>
-      </button>
-
-      <button
-        className={cn(
-          'relative flex flex-1 cursor-pointer flex-col items-center justify-center rounded-md py-2 font-medium text-[10px] transition-all duration-200',
-          activeTab === 'zones'
-            ? 'text-foreground'
-            : 'text-muted-foreground hover:bg-white/5 hover:text-foreground',
-        )}
-        onClick={() => {
-          setPhase('structure')
-          setStructureLayer('zones')
-        }}
-      >
-        {activeTab === 'zones' && (
-          <motion.div
-            className="absolute inset-0 rounded-md bg-[#3e3e3e] shadow-sm ring-1 ring-border/50"
-            layoutId="layerToggleActiveBg"
-            transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
-          />
-        )}
-        <div className="relative z-10 flex flex-col items-center">
-          <img
-            alt="Zones"
-            className={cn(
-              'mb-1 h-6 w-6 transition-all',
-              activeTab !== 'zones' && 'opacity-50 grayscale',
-            )}
-            src="/icons/kitchen.png"
-          />
-          Zones
-        </div>
-        <div className="absolute right-1.5 bottom-1 z-10 rounded border border-white/20 bg-white/10 px-1 py-[2px]">
-          <span className="block font-medium font-mono text-[9px] text-white/60 leading-none">
-            Z
-          </span>
-        </div>
-      </button>
+      {/* Furnish and Zones tabs hidden — functionality preserved in code, re-enable when needed */}
     </div>
   )
 }
