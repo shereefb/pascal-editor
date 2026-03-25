@@ -130,7 +130,10 @@ function normalizeModeForPhase(phase: Phase, mode: Mode | undefined): Mode {
 export function normalizePersistedEditorUiState(
   state: Partial<PersistedEditorUiState> | null | undefined,
 ): PersistedEditorUiState {
-  const phase = state?.phase === 'structure' || state?.phase === 'furnish' ? state.phase : 'site'
+  const phase =
+    state?.phase === 'structure' || state?.phase === 'frame' || state?.phase === 'furnish'
+      ? state.phase
+      : 'site'
   const mode = normalizeModeForPhase(phase, state?.mode)
   const isFloorplanOpen = Boolean(state?.isFloorplanOpen)
 
@@ -139,6 +142,27 @@ export function normalizePersistedEditorUiState(
       ...DEFAULT_PERSISTED_EDITOR_UI_STATE,
       phase,
       mode,
+      isFloorplanOpen,
+    }
+  }
+
+  if (phase === 'frame') {
+    if (mode !== 'build') {
+      return {
+        phase,
+        mode,
+        tool: null,
+        structureLayer: 'elements',
+        catalogCategory: null,
+        isFloorplanOpen,
+      }
+    }
+    return {
+      phase,
+      mode,
+      tool: state?.tool && ['post', 'beam', 'header', 'joist', 'shear-wall', 'bracing', 'hold-down'].includes(state.tool) ? state.tool : 'post',
+      structureLayer: 'elements',
+      catalogCategory: null,
       isFloorplanOpen,
     }
   }
@@ -224,6 +248,8 @@ const useEditor = create<EditorState>()(
             set({ tool: 'zone', catalogCategory: null })
           } else if (phase === 'structure') {
             set({ tool: 'wall', catalogCategory: null })
+          } else if (phase === 'frame') {
+            set({ tool: 'post', catalogCategory: null })
           } else if (phase === 'furnish') {
             set({ tool: 'item', catalogCategory: 'furniture' })
           }
@@ -279,6 +305,10 @@ const useEditor = create<EditorState>()(
             selectBuildingAndLevel0()
             break
 
+          case 'frame':
+            selectBuildingAndLevel0()
+            break
+
           case 'furnish':
             selectBuildingAndLevel0()
             // Furnish mode only supports elements layer, not zones
@@ -299,6 +329,8 @@ const useEditor = create<EditorState>()(
               set({ tool: 'zone' })
             } else if (phase === 'structure' && structureLayer === 'elements') {
               set({ tool: 'wall' })
+            } else if (phase === 'frame') {
+              set({ tool: 'post' })
             } else if (phase === 'furnish') {
               set({ tool: 'item', catalogCategory: 'furniture' })
             }

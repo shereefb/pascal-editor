@@ -8,6 +8,7 @@ import useEditor from './../../../store/use-editor'
 import { ItemCatalog } from '../item-catalog/item-catalog'
 import { CameraActions } from './camera-actions'
 import { ControlModes } from './control-modes'
+import { FrameTools } from './frame-tools'
 import { FurnishTools } from './furnish-tools'
 import { StructureTools } from './structure-tools'
 import { ViewToggles } from './view-toggles'
@@ -134,6 +135,40 @@ export function ActionMenu({ className }: { className?: string }) {
             >
               <div className="w-max">
                 <StructureTools />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        {/* Frame Tools Row - Animated */}
+        <AnimatePresence>
+          {phase === 'frame' && mode === 'build' && (
+            <motion.div
+              animate={{
+                opacity: 1,
+                maxHeight: 80,
+                paddingTop: 8,
+                paddingBottom: 8,
+                borderBottomWidth: 1,
+              }}
+              className={cn('max-h-20 overflow-hidden border-border border-b px-2 py-2')}
+              exit={{
+                opacity: 0,
+                maxHeight: 0,
+                paddingTop: 0,
+                paddingBottom: 0,
+                borderBottomWidth: 0,
+              }}
+              initial={{
+                opacity: 0,
+                maxHeight: 0,
+                paddingTop: 0,
+                paddingBottom: 0,
+                borderBottomWidth: 0,
+              }}
+              transition={transition}
+            >
+              <div className="w-max">
+                <FrameTools />
               </div>
             </motion.div>
           )}

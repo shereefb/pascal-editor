@@ -2,6 +2,7 @@ import { Html } from '@react-three/drei'
 import type { ThreeElements } from '@react-three/fiber'
 import { forwardRef } from 'react'
 import type { Group } from 'three'
+import { frameTools } from '../../../components/ui/action-menu/frame-tools'
 import { furnishTools } from '../../../components/ui/action-menu/furnish-tools'
 import { tools } from '../../../components/ui/action-menu/structure-tools'
 import { EDITOR_LAYER } from '../../../lib/constants'
@@ -29,7 +30,8 @@ export const CursorSphere = forwardRef<Group, CursorSphereProps>(function Cursor
     if (tool === 'item' && catalogCategory) {
       activeToolConfig = furnishTools.find((t) => t.catalogCategory === catalogCategory)
     } else {
-      activeToolConfig = tools.find((t) => t.id === tool)
+      activeToolConfig =
+        tools.find((t) => t.id === tool) ?? frameTools.find((t) => t.id === tool) ?? null
     }
   }
 

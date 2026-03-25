@@ -5,6 +5,13 @@ import { CeilingBoundaryEditor } from './ceiling/ceiling-boundary-editor'
 import { CeilingHoleEditor } from './ceiling/ceiling-hole-editor'
 import { CeilingTool } from './ceiling/ceiling-tool'
 import { DoorTool } from './door/door-tool'
+import { BeamTool } from './frame/beam-tool'
+import { BracingTool } from './frame/bracing-tool'
+import { HeaderTool } from './frame/header-tool'
+import { HoldDownTool } from './frame/hold-down-tool'
+import { JoistTool } from './frame/joist-tool'
+import { PostTool } from './frame/post-tool'
+import { ShearWallTool } from './frame/shear-wall-tool'
 import { ItemTool } from './item/item-tool'
 import { MoveTool } from './item/move-tool'
 import { RoofTool } from './roof/roof-tool'
@@ -30,6 +37,15 @@ const tools: Record<Phase, Partial<Record<Tool, React.FC>>> = {
     item: ItemTool,
     zone: ZoneTool,
     window: WindowTool,
+  },
+  frame: {
+    post: PostTool,
+    beam: BeamTool,
+    header: HeaderTool,
+    joist: JoistTool,
+    'shear-wall': ShearWallTool,
+    bracing: BracingTool,
+    'hold-down': HoldDownTool,
   },
   furnish: {
     item: ItemTool,
