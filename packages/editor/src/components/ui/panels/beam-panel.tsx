@@ -41,7 +41,7 @@ export function BeamPanel() {
 
   return (
     <PanelWrapper
-      icon="/icons/wall.png"
+      icon="/icons/beam.png"
       onClose={handleClose}
       title={node.name || 'Beam'}
       width={280}

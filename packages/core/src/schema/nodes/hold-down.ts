@@ -2,6 +2,7 @@ import dedent from 'dedent'
 import { z } from 'zod'
 import { BaseNode, nodeType, objectId } from '../base'
 
+// HoldDownNode intentionally omits FrameBaseProps — hold-downs are metal hardware, not lumber
 export const HoldDownNode = BaseNode.extend({
   id: objectId('hold-down'),
   type: nodeType('hold-down'),

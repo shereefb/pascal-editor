@@ -1,10 +1,12 @@
 import dedent from 'dedent'
 import { z } from 'zod'
 import { BaseNode, nodeType, objectId } from '../base'
+import { FrameBaseProps } from './frame-base'
 
 export const ShearWallNode = BaseNode.extend({
   id: objectId('shear-wall'),
   type: nodeType('shear-wall'),
+  ...FrameBaseProps,
   points: z.array(z.tuple([z.number(), z.number()])),
   sheathingType: z.enum(['osb', 'plywood']).default('osb'),
   nailingSchedule: z.string().default('8d @ 6/12'),

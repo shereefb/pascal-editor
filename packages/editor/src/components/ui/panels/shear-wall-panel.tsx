@@ -38,7 +38,7 @@ export function ShearWallPanel() {
 
   return (
     <PanelWrapper
-      icon="/icons/wall.png"
+      icon="/icons/shear-wall.png"
       onClose={handleClose}
       title={node.name || 'Shear Wall'}
       width={280}

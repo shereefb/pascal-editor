@@ -1,7 +1,7 @@
 import { type AnyNodeId, emitter, type GridEvent, HoldDownNode, useScene } from '@pascal-app/core'
 import { useViewer } from '@pascal-app/viewer'
 import { useEffect, useRef } from 'react'
-import { DoubleSide, type Group, type Mesh } from 'three'
+import { DoubleSide, type Group } from 'three'
 import { EDITOR_LAYER } from '../../../lib/constants'
 import { sfxEmitter } from '../../../lib/sfx-bus'
 import { CursorSphere } from '../shared/cursor-sphere'
@@ -16,7 +16,7 @@ const BRACKET_DEPTH = 0.06
  */
 export const HoldDownTool: React.FC = () => {
   const cursorRef = useRef<Group>(null)
-  const previewRef = useRef<Mesh>(null!)
+  const previewRef = useRef<Group>(null!)
 
   useEffect(() => {
     const onGridMove = (event: GridEvent) => {
@@ -73,7 +73,7 @@ export const HoldDownTool: React.FC = () => {
       <CursorSphere ref={cursorRef} />
 
       {/* Hold-down preview — small L-bracket shape */}
-      <group ref={previewRef as unknown as React.Ref<Group>}>
+      <group ref={previewRef}>
         {/* Vertical plate */}
         <mesh layers={EDITOR_LAYER} position={[0, 0, 0]} renderOrder={1}>
           <boxGeometry args={[BRACKET_WIDTH, BRACKET_HEIGHT, BRACKET_DEPTH / 3]} />

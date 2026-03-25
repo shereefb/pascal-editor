@@ -217,14 +217,26 @@ export const ShearWallTool: React.FC = () => {
       }
     }
 
+    const handleCancel = () => {
+      if (pointsRef.current.length > 0) {
+        // Mid-draw: reset polygon points
+        pointsRef.current = []
+        setPreview({ points: [], cursorPoint: null, levelY: levelYRef.current })
+        mainLineRef.current.visible = false
+        closingLineRef.current.visible = false
+      }
+    }
+
     emitter.on('grid:move', onGridMove)
     emitter.on('grid:click', onGridClick)
     emitter.on('grid:double-click', onGridDoubleClick)
+    emitter.on('tool:cancel', handleCancel)
 
     return () => {
       emitter.off('grid:move', onGridMove)
       emitter.off('grid:click', onGridClick)
       emitter.off('grid:double-click', onGridDoubleClick)
+      emitter.off('tool:cancel', handleCancel)
 
       pointsRef.current = []
     }

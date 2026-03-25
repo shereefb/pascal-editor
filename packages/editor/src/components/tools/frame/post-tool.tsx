@@ -1,4 +1,4 @@
-import { type AnyNodeId, emitter, type GridEvent, type LevelNode, PostNode, useScene } from '@pascal-app/core'
+import { type AnyNodeId, emitter, type GridEvent, PostNode, useScene } from '@pascal-app/core'
 import { useViewer } from '@pascal-app/viewer'
 import { useEffect, useRef } from 'react'
 import { DoubleSide, type Group, type Mesh } from 'three'
