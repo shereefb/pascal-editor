@@ -5,6 +5,7 @@ import { DoubleSide, type Group, type Mesh, Shape, ShapeGeometry, Vector3 } from
 import { EDITOR_LAYER } from '../../../lib/constants'
 import { sfxEmitter } from '../../../lib/sfx-bus'
 import { CursorSphere } from '../shared/cursor-sphere'
+import { getPostsFromScene, getWallsFromScene, snapToWallsAndPosts } from './frame-snap'
 
 const BEAM_HEIGHT = 0.235 // ~9.25" (2x10 depth)
 
@@ -54,34 +55,35 @@ export const BeamTool: React.FC = () => {
   const buildingState = useRef(0)
 
   useEffect(() => {
+    const walls = getWallsFromScene()
+    const posts = getPostsFromScene()
+
     const onGridMove = (event: GridEvent) => {
       if (!(cursorRef.current && previewRef.current)) return
 
-      const x = event.position[0]
+      const [sx, sz] = snapToWallsAndPosts(event.position[0], event.position[2], walls, posts)
       const y = event.position[1]
-      const z = event.position[2]
 
       if (buildingState.current === 1) {
-        endingPoint.current.set(x, y, z)
-        cursorRef.current.position.set(x, y, z)
+        endingPoint.current.set(sx, y, sz)
+        cursorRef.current.position.set(sx, y, sz)
         updateBeamPreview(previewRef.current, startingPoint.current, endingPoint.current)
       } else {
-        cursorRef.current.position.set(x, y, z)
+        cursorRef.current.position.set(sx, y, sz)
       }
     }
 
     const onGridClick = (event: GridEvent) => {
-      const x = event.position[0]
+      const [sx, sz] = snapToWallsAndPosts(event.position[0], event.position[2], walls, posts)
       const y = event.position[1]
-      const z = event.position[2]
 
       if (buildingState.current === 0) {
-        startingPoint.current.set(x, y, z)
+        startingPoint.current.set(sx, y, sz)
         endingPoint.current.copy(startingPoint.current)
         buildingState.current = 1
         previewRef.current.visible = true
       } else if (buildingState.current === 1) {
-        endingPoint.current.set(x, y, z)
+        endingPoint.current.set(sx, y, sz)
 
         const dx = endingPoint.current.x - startingPoint.current.x
         const dz = endingPoint.current.z - startingPoint.current.z

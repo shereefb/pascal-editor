@@ -5,6 +5,7 @@ import { DoubleSide, type Group } from 'three'
 import { EDITOR_LAYER } from '../../../lib/constants'
 import { sfxEmitter } from '../../../lib/sfx-bus'
 import { CursorSphere } from '../shared/cursor-sphere'
+import { getWallsFromScene, snapToWalls } from './frame-snap'
 
 const BRACKET_WIDTH = 0.06
 const BRACKET_HEIGHT = 0.15
@@ -19,12 +20,13 @@ export const HoldDownTool: React.FC = () => {
   const previewRef = useRef<Group>(null!)
 
   useEffect(() => {
+    const walls = getWallsFromScene()
+
     const onGridMove = (event: GridEvent) => {
       if (!(cursorRef.current && previewRef.current)) return
 
-      const x = event.position[0]
+      const [x, z] = snapToWalls(event.position[0], event.position[2], walls)
       const y = event.position[1]
-      const z = event.position[2]
 
       cursorRef.current.position.set(x, y, z)
       previewRef.current.position.set(x, y + BRACKET_HEIGHT / 2, z)
@@ -35,6 +37,8 @@ export const HoldDownTool: React.FC = () => {
       const levelId = useViewer.getState().selection.levelId
       if (!levelId) return
 
+      const [x, z] = snapToWalls(event.position[0], event.position[2], walls)
+
       const { createNode, nodes } = useScene.getState()
 
       const holdDownCount = Object.values(nodes).filter((n) => n.type === 'hold-down').length
@@ -42,7 +46,7 @@ export const HoldDownTool: React.FC = () => {
 
       const node = HoldDownNode.parse({
         name,
-        position: [event.position[0], event.position[2]],
+        position: [x, z],
         model: 'HDU2',
       })
 

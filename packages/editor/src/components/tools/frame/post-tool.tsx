@@ -5,6 +5,7 @@ import { DoubleSide, type Group, type Mesh } from 'three'
 import { EDITOR_LAYER } from '../../../lib/constants'
 import { sfxEmitter } from '../../../lib/sfx-bus'
 import { CursorSphere } from '../shared/cursor-sphere'
+import { getWallsFromScene, snapToWalls } from './frame-snap'
 
 const POST_WIDTH = 0.089
 const POST_HEIGHT = 2.5
@@ -18,12 +19,13 @@ export const PostTool: React.FC = () => {
   const previewRef = useRef<Mesh>(null!)
 
   useEffect(() => {
+    const walls = getWallsFromScene()
+
     const onGridMove = (event: GridEvent) => {
       if (!(cursorRef.current && previewRef.current)) return
 
-      const x = event.position[0]
+      const [x, z] = snapToWalls(event.position[0], event.position[2], walls)
       const y = event.position[1]
-      const z = event.position[2]
 
       cursorRef.current.position.set(x, y, z)
       previewRef.current.position.set(x, y + POST_HEIGHT / 2, z)
@@ -34,6 +36,8 @@ export const PostTool: React.FC = () => {
       const levelId = useViewer.getState().selection.levelId
       if (!levelId) return
 
+      const [x, z] = snapToWalls(event.position[0], event.position[2], walls)
+
       const { createNode, nodes } = useScene.getState()
 
       // Count existing posts for naming
@@ -42,7 +46,7 @@ export const PostTool: React.FC = () => {
 
       const node = PostNode.parse({
         name,
-        position: [event.position[0], event.position[2]],
+        position: [x, z],
         material: 'wood',
         designation: '4x4',
       })
