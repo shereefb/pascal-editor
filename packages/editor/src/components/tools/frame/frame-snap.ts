@@ -116,6 +116,58 @@ export function getPostsFromScene(): PostNode[] {
 }
 
 /**
+ * Find the best axis-aligned snap from existing posts.
+ *
+ * For each existing post, checks if the cursor is near its X or Z coordinate.
+ * If near both an X-line and a Z-line (from different posts), snaps to their
+ * intersection — completing a rectangle. If near only one axis, snaps that
+ * axis alone.
+ */
+export function findPostGridSnap(
+  point: PlanPoint,
+  posts: PostNode[],
+  radius = FRAME_SNAP_RADIUS,
+): PlanPoint | null {
+  if (posts.length === 0) return null
+
+  let bestX: number | null = null
+  let bestXDist = radius
+  let bestZ: number | null = null
+  let bestZDist = radius
+
+  for (const post of posts) {
+    const dx = Math.abs(point[0] - post.position[0])
+    const dz = Math.abs(point[1] - post.position[1])
+
+    // Check X-axis alignment (same column)
+    if (dx < bestXDist) {
+      bestX = post.position[0]
+      bestXDist = dx
+    }
+    // Check Z-axis alignment (same row)
+    if (dz < bestZDist) {
+      bestZ = post.position[1]
+      bestZDist = dz
+    }
+  }
+
+  if (bestX !== null && bestZ !== null) {
+    // Near both axes — snap to intersection (rectangle completion)
+    return [bestX, bestZ]
+  }
+  if (bestX !== null) {
+    // Align X only (same column as existing post)
+    return [bestX, point[1]]
+  }
+  if (bestZ !== null) {
+    // Align Z only (same row as existing post)
+    return [point[0], bestZ]
+  }
+
+  return null
+}
+
+/**
  * Snap a 3D grid event position to the nearest wall feature.
  * Returns the snapped [x, z] plan coordinates, or the original position if
  * nothing is within snap range.
@@ -124,6 +176,27 @@ export function snapToWalls(x: number, z: number, walls?: WallNode[]): PlanPoint
   const allWalls = walls ?? getWallsFromScene()
   const snapped = findFrameSnapTarget([x, z], allWalls)
   return snapped ?? [x, z]
+}
+
+/**
+ * Snap for the post tool — walls first, then post-grid alignment.
+ *
+ * Priority: exact wall target > post grid intersection > single-axis post
+ * alignment > raw position.
+ *
+ * Posts are read fresh (not cached) so newly placed posts are included.
+ */
+export function snapForPost(x: number, z: number, walls: WallNode[]): PlanPoint {
+  // Wall snap takes priority (exact structural location)
+  const wallSnap = findFrameSnapTarget([x, z], walls)
+  if (wallSnap) return wallSnap
+
+  // Post grid alignment (forms rectangles with existing posts)
+  const posts = getPostsFromScene()
+  const gridSnap = findPostGridSnap([x, z], posts)
+  if (gridSnap) return gridSnap
+
+  return [x, z]
 }
 
 /**

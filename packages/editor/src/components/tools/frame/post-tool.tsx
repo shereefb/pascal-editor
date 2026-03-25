@@ -5,7 +5,7 @@ import { DoubleSide, type Group, type Mesh } from 'three'
 import { EDITOR_LAYER } from '../../../lib/constants'
 import { sfxEmitter } from '../../../lib/sfx-bus'
 import { CursorSphere } from '../shared/cursor-sphere'
-import { getWallsFromScene, snapToWalls } from './frame-snap'
+import { getWallsFromScene, snapForPost } from './frame-snap'
 
 const POST_WIDTH = 0.089
 const POST_HEIGHT = 2.5
@@ -24,7 +24,7 @@ export const PostTool: React.FC = () => {
     const onGridMove = (event: GridEvent) => {
       if (!(cursorRef.current && previewRef.current)) return
 
-      const [x, z] = snapToWalls(event.position[0], event.position[2], walls)
+      const [x, z] = snapForPost(event.position[0], event.position[2], walls)
       const y = event.position[1]
 
       cursorRef.current.position.set(x, y, z)
@@ -36,7 +36,7 @@ export const PostTool: React.FC = () => {
       const levelId = useViewer.getState().selection.levelId
       if (!levelId) return
 
-      const [x, z] = snapToWalls(event.position[0], event.position[2], walls)
+      const [x, z] = snapForPost(event.position[0], event.position[2], walls)
 
       const { createNode, nodes } = useScene.getState()
 
