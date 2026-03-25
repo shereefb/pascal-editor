@@ -64,6 +64,13 @@ import { SlabTreeNode } from './slab-tree-node'
 import { WallTreeNode } from './wall-tree-node'
 import { WindowTreeNode } from './window-tree-node'
 import { ZoneTreeNode } from './zone-tree-node'
+import { PostTreeNode } from './post-tree-node'
+import { BeamTreeNode } from './beam-tree-node'
+import { HeaderTreeNode } from './header-tree-node'
+import { JoistTreeNode } from './joist-tree-node'
+import { ShearWallTreeNode } from './shear-wall-tree-node'
+import { BracingTreeNode } from './bracing-tree-node'
+import { HoldDownTreeNode } from './hold-down-tree-node'
 
 interface TreeNodeProps {
   nodeId: AnyNodeId
@@ -97,6 +104,20 @@ export function TreeNode({ nodeId, depth = 0, isLast }: TreeNodeProps) {
       return <WindowTreeNode depth={depth} isLast={isLast} node={node as any} />
     case 'zone':
       return <ZoneTreeNode depth={depth} isLast={isLast} node={node as any} />
+    case 'post':
+      return <PostTreeNode depth={depth} isLast={isLast} node={node as any} />
+    case 'beam':
+      return <BeamTreeNode depth={depth} isLast={isLast} node={node as any} />
+    case 'header':
+      return <HeaderTreeNode depth={depth} isLast={isLast} node={node as any} />
+    case 'joist':
+      return <JoistTreeNode depth={depth} isLast={isLast} node={node as any} />
+    case 'shear-wall':
+      return <ShearWallTreeNode depth={depth} isLast={isLast} node={node as any} />
+    case 'bracing':
+      return <BracingTreeNode depth={depth} isLast={isLast} node={node as any} />
+    case 'hold-down':
+      return <HoldDownTreeNode depth={depth} isLast={isLast} node={node as any} />
     default:
       return null
   }

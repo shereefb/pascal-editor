@@ -1,7 +1,7 @@
 import { type AnyNodeId, useScene } from '@pascal-app/core'
 import { useViewer } from '@pascal-app/viewer'
 import { useMemo } from 'react'
-import useEditor, { type StructureTool } from '../store/use-editor'
+import useEditor, { type FrameTool, type StructureTool } from '../store/use-editor'
 
 export function useContextualTools() {
   const selection = useViewer((s) => s.selection)
@@ -10,6 +10,22 @@ export function useContextualTools() {
   const structureLayer = useEditor((s) => s.structureLayer)
 
   return useMemo(() => {
+    // Frame phase tools
+    if (phase === 'frame') {
+      const defaultFrameTools: FrameTool[] = ['post', 'beam', 'header', 'joist', 'shear-wall', 'bracing', 'hold-down']
+
+      if (selection.selectedIds.length === 0) return defaultFrameTools
+
+      const selectedTypes = new Set(
+        selection.selectedIds.map((id) => nodes[id as AnyNodeId]?.type).filter(Boolean),
+      )
+
+      if (selectedTypes.has('post')) return ['beam', 'bracing', 'hold-down', 'post'] as FrameTool[]
+      if (selectedTypes.has('beam')) return ['post', 'joist', 'beam'] as FrameTool[]
+
+      return defaultFrameTools
+    }
+
     // If we are in the zones layer, only zone tool is relevant
     if (structureLayer === 'zones') {
       return ['zone'] as StructureTool[]
@@ -48,5 +64,5 @@ export function useContextualTools() {
     }
 
     return defaultTools
-  }, [selection.selectedIds, nodes, structureLayer])
+  }, [selection.selectedIds, nodes, phase, structureLayer])
 }

@@ -12,6 +12,13 @@ import { RoofSegmentPanel } from './roof-segment-panel'
 import { SlabPanel } from './slab-panel'
 import { WallPanel } from './wall-panel'
 import { WindowPanel } from './window-panel'
+import { PostPanel } from './post-panel'
+import { BeamPanel } from './beam-panel'
+import { HeaderPanel } from './header-panel'
+import { JoistPanel } from './joist-panel'
+import { ShearWallPanel } from './shear-wall-panel'
+import { BracingPanel } from './bracing-panel'
+import { HoldDownPanel } from './hold-down-panel'
 
 export function PanelManager() {
   const selectedIds = useViewer((s) => s.selection.selectedIds)
@@ -45,6 +52,20 @@ export function PanelManager() {
           return <DoorPanel />
         case 'window':
           return <WindowPanel />
+        case 'post':
+          return <PostPanel />
+        case 'beam':
+          return <BeamPanel />
+        case 'header':
+          return <HeaderPanel />
+        case 'joist':
+          return <JoistPanel />
+        case 'shear-wall':
+          return <ShearWallPanel />
+        case 'bracing':
+          return <BracingPanel />
+        case 'hold-down':
+          return <HoldDownPanel />
       }
     }
   }
