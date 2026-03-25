@@ -908,8 +908,8 @@ function LayerToggle() {
           />
           Structure
         </div>
-        <div className="absolute right-1.5 bottom-1 z-10 rounded border border-border/40 bg-background/40 px-1 py-[2px] backdrop-blur-md">
-          <span className="block font-medium font-mono text-[9px] text-muted-foreground leading-none">
+        <div className="absolute right-1.5 bottom-1 z-10 rounded border border-white/20 bg-white/10 px-1 py-[2px]">
+          <span className="block font-medium font-mono text-[9px] text-white/60 leading-none">
             S
           </span>
         </div>
@@ -944,8 +944,8 @@ function LayerToggle() {
           />
           Frame
         </div>
-        <div className="absolute right-1.5 bottom-1 z-10 rounded border border-border/40 bg-background/40 px-1 py-[2px] backdrop-blur-md">
-          <span className="block font-medium font-mono text-[9px] text-muted-foreground leading-none">
+        <div className="absolute right-1.5 bottom-1 z-10 rounded border border-white/20 bg-white/10 px-1 py-[2px]">
+          <span className="block font-medium font-mono text-[9px] text-white/60 leading-none">
             R
           </span>
         </div>
@@ -980,8 +980,8 @@ function LayerToggle() {
           />
           Furnish
         </div>
-        <div className="absolute right-1.5 bottom-1 z-10 rounded border border-border/40 bg-background/40 px-1 py-[2px] backdrop-blur-md">
-          <span className="block font-medium font-mono text-[9px] text-muted-foreground leading-none">
+        <div className="absolute right-1.5 bottom-1 z-10 rounded border border-white/20 bg-white/10 px-1 py-[2px]">
+          <span className="block font-medium font-mono text-[9px] text-white/60 leading-none">
             F
           </span>
         </div>
@@ -1017,8 +1017,8 @@ function LayerToggle() {
           />
           Zones
         </div>
-        <div className="absolute right-1.5 bottom-1 z-10 rounded border border-border/40 bg-background/40 px-1 py-[2px] backdrop-blur-md">
-          <span className="block font-medium font-mono text-[9px] text-muted-foreground leading-none">
+        <div className="absolute right-1.5 bottom-1 z-10 rounded border border-white/20 bg-white/10 px-1 py-[2px]">
+          <span className="block font-medium font-mono text-[9px] text-white/60 leading-none">
             Z
           </span>
         </div>
