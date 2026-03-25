@@ -33,12 +33,19 @@ export const useKeyboard = () => {
         useEditor.getState().setMode('select')
       } else if (e.key === '3' && !e.metaKey && !e.ctrlKey) {
         e.preventDefault()
+        useEditor.getState().setPhase('frame')
+        useEditor.getState().setMode('select')
+      } else if (e.key === '4' && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault()
         useEditor.getState().setPhase('furnish')
         useEditor.getState().setMode('select')
       } else if (e.key === 's' && !e.metaKey && !e.ctrlKey) {
         e.preventDefault()
         useEditor.getState().setPhase('structure')
         useEditor.getState().setStructureLayer('elements')
+      } else if (e.key === 'r' && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault()
+        useEditor.getState().setPhase('frame')
       } else if (e.key === 'f' && !e.metaKey && !e.ctrlKey) {
         e.preventDefault()
         useEditor.getState().setPhase('furnish')

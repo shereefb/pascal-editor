@@ -909,7 +909,7 @@ function LayerToggle() {
           Structure
         </div>
         <div className="absolute right-1.5 bottom-1 z-10 rounded border border-border/40 bg-background/40 px-1 py-[2px] backdrop-blur-md">
-          <span className="block font-medium font-mono text-[9px] text-muted-foreground/70 leading-none">
+          <span className="block font-medium font-mono text-[9px] text-muted-foreground leading-none">
             S
           </span>
         </div>
@@ -945,7 +945,7 @@ function LayerToggle() {
           Frame
         </div>
         <div className="absolute right-1.5 bottom-1 z-10 rounded border border-border/40 bg-background/40 px-1 py-[2px] backdrop-blur-md">
-          <span className="block font-medium font-mono text-[9px] text-muted-foreground/70 leading-none">
+          <span className="block font-medium font-mono text-[9px] text-muted-foreground leading-none">
             R
           </span>
         </div>
@@ -981,7 +981,7 @@ function LayerToggle() {
           Furnish
         </div>
         <div className="absolute right-1.5 bottom-1 z-10 rounded border border-border/40 bg-background/40 px-1 py-[2px] backdrop-blur-md">
-          <span className="block font-medium font-mono text-[9px] text-muted-foreground/70 leading-none">
+          <span className="block font-medium font-mono text-[9px] text-muted-foreground leading-none">
             F
           </span>
         </div>
@@ -1018,7 +1018,7 @@ function LayerToggle() {
           Zones
         </div>
         <div className="absolute right-1.5 bottom-1 z-10 rounded border border-border/40 bg-background/40 px-1 py-[2px] backdrop-blur-md">
-          <span className="block font-medium font-mono text-[9px] text-muted-foreground/70 leading-none">
+          <span className="block font-medium font-mono text-[9px] text-muted-foreground leading-none">
             Z
           </span>
         </div>
@@ -1556,7 +1556,7 @@ export function SitePanel({ projectId, onUploadAsset, onDeleteAsset }: SitePanel
             <motion.div className="flex min-h-0 flex-1 flex-col" layout>
               {buildings.map((building) => {
                 const isBuildingActive =
-                  (phase === 'structure' || phase === 'furnish') &&
+                  (phase === 'structure' || phase === 'frame' || phase === 'furnish') &&
                   selectedBuildingId === building.id
 
                 return (
