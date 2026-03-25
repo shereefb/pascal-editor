@@ -1,6 +1,6 @@
 import { type BeamNode, useRegistry } from '@pascal-app/core'
 import { useMemo, useRef } from 'react'
-import type { Mesh } from 'three'
+import type { Group } from 'three'
 import { useNodeEvents } from '../../../hooks/use-node-events'
 import { getUtilizationColor } from '../frame/utilization-color'
 
@@ -20,7 +20,7 @@ const getBeamSection = (designation?: string): [number, number] => {
 }
 
 export const BeamRenderer = ({ node }: { node: BeamNode }) => {
-  const ref = useRef<Mesh>(null!)
+  const ref = useRef<Group>(null!)
 
   useRegistry(node.id, 'beam', ref)
 
@@ -44,17 +44,21 @@ export const BeamRenderer = ({ node }: { node: BeamNode }) => {
   }, [node.start, node.end, node.designation, node.plyCount])
 
   return (
-    <mesh
-      castShadow
-      receiveShadow
+    <group
       ref={ref}
       position={[geometry.midX, geometry.y, geometry.midZ]}
       rotation={[0, geometry.angle, 0]}
       visible={node.visible}
-      {...handlers}
     >
-      <boxGeometry args={[geometry.width, geometry.height, geometry.length]} />
-      <meshStandardMaterial color={color} transparent opacity={0.6} />
-    </mesh>
+      {/* Visible beam */}
+      <mesh castShadow receiveShadow>
+        <boxGeometry args={[geometry.width, geometry.height, geometry.length]} />
+        <meshStandardMaterial color={color} transparent opacity={0.6} />
+      </mesh>
+      {/* Larger invisible collision mesh for easier selection */}
+      <mesh visible={false} {...handlers}>
+        <boxGeometry args={[Math.max(geometry.width, 0.15), Math.max(geometry.height, 0.15), geometry.length]} />
+      </mesh>
+    </group>
   )
 }
