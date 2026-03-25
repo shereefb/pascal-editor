@@ -384,6 +384,7 @@ interface LevelReferencesProps {
   projectId?: string
   onUploadAsset?: (projectId: string, levelId: string, file: File, type: 'scan' | 'guide') => void
   onDeleteAsset?: (projectId: string, url: string) => void
+  hideScanUpload?: boolean
 }
 
 function LevelReferences({
@@ -392,6 +393,7 @@ function LevelReferences({
   projectId,
   onUploadAsset,
   onDeleteAsset,
+  hideScanUpload,
 }: LevelReferencesProps) {
   const nodes = useScene((s) => s.nodes)
   const deleteNode = useScene((s) => s.deleteNode)
@@ -470,7 +472,7 @@ function LevelReferences({
   }
 
   const rows = [
-    { type: 'upload' as const },
+    ...(!hideScanUpload ? [{ type: 'upload' as const }] : []),
     ...references.map((ref) => ({ type: 'ref' as const, data: ref })),
   ]
 
@@ -559,6 +561,7 @@ function LevelItem({
   projectId,
   onUploadAsset,
   onDeleteAsset,
+  hideScanUpload,
 }: {
   level: LevelNode
   selectedLevelId: string | null
@@ -568,6 +571,7 @@ function LevelItem({
   projectId?: string
   onUploadAsset?: (projectId: string, levelId: string, file: File, type: 'scan' | 'guide') => void
   onDeleteAsset?: (projectId: string, url: string) => void
+  hideScanUpload?: boolean
 }) {
   const [cameraPopoverOpen, setCameraPopoverOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
@@ -767,12 +771,15 @@ function LevelItem({
             transition={{ type: 'spring', bounce: 0, duration: 0.3 }}
           >
             <LevelReferences
+              hideScanUpload={hideScanUpload}
               isLastLevel={isLast}
               levelId={level.id}
               onDeleteAsset={onDeleteAsset}
               onUploadAsset={onUploadAsset}
               projectId={projectId}
             />
+            <LayerToggle />
+            <ContentSection />
           </motion.div>
         )}
       </AnimatePresence>
@@ -784,10 +791,12 @@ function LevelsSection({
   projectId,
   onUploadAsset,
   onDeleteAsset,
+  hideScanUpload,
 }: {
   projectId?: string
   onUploadAsset?: (projectId: string, levelId: string, file: File, type: 'scan' | 'guide') => void
   onDeleteAsset?: (projectId: string, url: string) => void
+  hideScanUpload?: boolean
 } = {}) {
   const nodes = useScene((state) => state.nodes)
   const createNode = useScene((state) => state.createNode)
@@ -841,8 +850,9 @@ function LevelsSection({
             No levels yet
           </div>
         )}
-        {[...levels].reverse().map((level, index) => (
+        {levels.map((level, index) => (
           <LevelItem
+            hideScanUpload={hideScanUpload}
             isLast={index === levels.length - 1}
             key={level.id}
             level={level}
@@ -884,13 +894,13 @@ function LayerToggle() {
             : 'none'
 
   return (
-    <div className="relative flex items-center gap-1 border-border/50 border-b bg-[#2C2C2E] p-1">
+    <div className="relative flex items-center gap-1 border-border/50 border-b bg-black/[0.06] p-1.5 pl-10 dark:bg-white/[0.06]">
       <button
         className={cn(
-          'relative flex flex-1 cursor-pointer flex-col items-center justify-center rounded-md py-2 font-medium text-[10px] transition-all duration-200',
+          'relative flex flex-1 cursor-pointer flex-col items-center justify-center rounded-md py-2 font-medium text-[11px] transition-all duration-200',
           activeTab === 'structure'
             ? 'text-foreground'
-            : 'text-muted-foreground hover:bg-white/5 hover:text-foreground',
+            : 'text-muted-foreground hover:bg-black/5 hover:text-foreground dark:hover:bg-white/5',
         )}
         onClick={() => {
           setPhase('structure')
@@ -899,7 +909,7 @@ function LayerToggle() {
       >
         {activeTab === 'structure' && (
           <motion.div
-            className="absolute inset-0 rounded-md bg-[#3e3e3e] shadow-sm ring-1 ring-border/50"
+            className="absolute inset-0 rounded-md bg-white shadow-sm ring-1 ring-black/10 dark:bg-white/[0.08] dark:ring-white/10"
             layoutId="layerToggleActiveBg"
             transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
           />
@@ -908,27 +918,23 @@ function LayerToggle() {
           <img
             alt="Architecture"
             className={cn(
-              'mb-1 h-6 w-6 transition-all',
-              activeTab !== 'structure' && 'opacity-50 grayscale',
+              'mb-1 h-5 w-5 transition-all',
+              activeTab !== 'structure' && 'opacity-40 grayscale',
             )}
             src="/icons/room.png"
           />
           {/* UI label "Architecture" maps to phase='structure' in code */}
           Architecture
         </div>
-        <div className="absolute right-1.5 bottom-1 z-10 rounded border border-white/20 bg-white/10 px-1 py-[2px]">
-          <span className="block font-medium font-mono text-[9px] text-white/60 leading-none">
-            S
-          </span>
-        </div>
+        <kbd className="absolute right-1.5 bottom-1 z-10 rounded border border-black/15 bg-black/[0.06] px-1 py-[2px] font-mono text-[9px] text-muted-foreground leading-none dark:border-white/20 dark:bg-white/10">S</kbd>
       </button>
 
       <button
         className={cn(
-          'relative flex flex-1 cursor-pointer flex-col items-center justify-center rounded-md py-2 font-medium text-[10px] transition-all duration-200',
+          'relative flex flex-1 cursor-pointer flex-col items-center justify-center rounded-md py-2 font-medium text-[11px] transition-all duration-200',
           activeTab === 'frame'
             ? 'text-foreground'
-            : 'text-muted-foreground hover:bg-white/5 hover:text-foreground',
+            : 'text-muted-foreground hover:bg-black/5 hover:text-foreground dark:hover:bg-white/5',
         )}
         onClick={() => {
           setPhase('frame')
@@ -936,7 +942,7 @@ function LayerToggle() {
       >
         {activeTab === 'frame' && (
           <motion.div
-            className="absolute inset-0 rounded-md bg-[#3e3e3e] shadow-sm ring-1 ring-border/50"
+            className="absolute inset-0 rounded-md bg-white shadow-sm ring-1 ring-black/10 dark:bg-white/[0.08] dark:ring-white/10"
             layoutId="layerToggleActiveBg"
             transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
           />
@@ -945,19 +951,15 @@ function LayerToggle() {
           <img
             alt="Structural"
             className={cn(
-              'mb-1 h-6 w-6 transition-all',
-              activeTab !== 'frame' && 'opacity-50 grayscale',
+              'mb-1 h-5 w-5 transition-all',
+              activeTab !== 'frame' && 'opacity-40 grayscale',
             )}
             src="/icons/column.png"
           />
           {/* UI label "Structural" maps to phase='frame' in code */}
           Structural
         </div>
-        <div className="absolute right-1.5 bottom-1 z-10 rounded border border-white/20 bg-white/10 px-1 py-[2px]">
-          <span className="block font-medium font-mono text-[9px] text-white/60 leading-none">
-            R
-          </span>
-        </div>
+        <kbd className="absolute right-1.5 bottom-1 z-10 rounded border border-black/15 bg-black/[0.06] px-1 py-[2px] font-mono text-[9px] text-muted-foreground leading-none dark:border-white/20 dark:bg-white/10">R</kbd>
       </button>
 
       {/* Furnish and Zones tabs hidden — functionality preserved in code, re-enable when needed */}
@@ -1199,19 +1201,26 @@ function ContentSection() {
     )
   }
 
-  // Filter elements based on phase
+  // Node types that belong to each phase
+  const ARCHITECTURE_TYPES = new Set([
+    'wall', 'slab', 'ceiling', 'roof', 'roof-segment', 'door', 'window', 'item',
+  ])
+  const FRAME_TYPES = new Set([
+    'post', 'beam', 'header', 'joist', 'shear-wall', 'bracing', 'hold-down',
+  ])
+
+  // Filter elements based on active phase
   const elementChildren = level.children.filter((childId) => {
     const childNode = nodes[childId]
     if (!childNode || childNode.type === 'zone') return false
 
-    // We no longer filter out structural nodes in furnish mode or furnish nodes in structure mode
-    // This allows nested items (like lights in a ceiling or cabinetry on a wall) to remain visible
-    // and selectable in both modes, ensuring seamless transition in the tree view.
-    return true
+    if (phase === 'structure') return ARCHITECTURE_TYPES.has(childNode.type)
+    if (phase === 'frame') return FRAME_TYPES.has(childNode.type)
+    return true // site/furnish: show all
   })
 
   if (elementChildren.length === 0) {
-    return <div className="px-3 py-4 text-muted-foreground text-sm">No elements on this level</div>
+    return <div className="py-4 pl-10 pr-3 text-muted-foreground text-sm">No elements on this level</div>
   }
 
   return (
@@ -1219,7 +1228,7 @@ function ContentSection() {
       <div className="flex flex-col">
         {elementChildren.map((childId, index) => (
           <TreeNode
-            depth={0}
+            depth={2}
             isLast={index === elementChildren.length - 1}
             key={childId}
             nodeId={childId}
@@ -1238,6 +1247,7 @@ function BuildingItem({
   projectId,
   onUploadAsset,
   onDeleteAsset,
+  hideScanUpload,
 }: {
   building: BuildingNode
   isBuildingActive: boolean
@@ -1246,6 +1256,7 @@ function BuildingItem({
   projectId?: string
   onUploadAsset?: (projectId: string, levelId: string, file: File, type: 'scan' | 'guide') => void
   onDeleteAsset?: (projectId: string, url: string) => void
+  hideScanUpload?: boolean
 }) {
   const setSelection = useViewer((state) => state.setSelection)
   const phase = useEditor((state) => state.phase)
@@ -1379,19 +1390,14 @@ function BuildingItem({
             initial={{ opacity: 0, flex: 0 }}
             transition={{ type: 'spring', bounce: 0, duration: 0.4 }}
           >
-            <div className="flex min-h-0 w-full flex-1 flex-col">
-              <div className="flex shrink-0 flex-col">
-                <LevelsSection
-                  onDeleteAsset={onDeleteAsset}
-                  onUploadAsset={onUploadAsset}
-                  projectId={projectId}
-                />
-                <LayerToggle />
-              </div>
-              <div className="subtle-scrollbar relative min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
-                <MultiSelectionBadge />
-                <ContentSection />
-              </div>
+            <div className="subtle-scrollbar flex min-h-0 w-full flex-1 flex-col overflow-y-auto overflow-x-hidden">
+              <MultiSelectionBadge />
+              <LevelsSection
+                hideScanUpload={hideScanUpload}
+                onDeleteAsset={onDeleteAsset}
+                onUploadAsset={onUploadAsset}
+                projectId={projectId}
+              />
             </div>
           </motion.div>
         )}
@@ -1404,9 +1410,10 @@ export interface SitePanelProps {
   projectId?: string
   onUploadAsset?: (projectId: string, levelId: string, file: File, type: 'scan' | 'guide') => void
   onDeleteAsset?: (projectId: string, url: string) => void
+  hideScanUpload?: boolean
 }
 
-export function SitePanel({ projectId, onUploadAsset, onDeleteAsset }: SitePanelProps = {}) {
+export function SitePanel({ projectId, onUploadAsset, onDeleteAsset, hideScanUpload }: SitePanelProps = {}) {
   const nodes = useScene((state) => state.nodes)
   const rootNodeIds = useScene((state) => state.rootNodeIds)
   const updateNode = useScene((state) => state.updateNode)
@@ -1501,6 +1508,7 @@ export function SitePanel({ projectId, onUploadAsset, onDeleteAsset }: SitePanel
                   <BuildingItem
                     building={building}
                     buildingCameraOpen={buildingCameraOpen}
+                    hideScanUpload={hideScanUpload}
                     isBuildingActive={isBuildingActive}
                     key={building.id}
                     onDeleteAsset={onDeleteAsset}

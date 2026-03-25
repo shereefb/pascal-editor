@@ -23,22 +23,17 @@ export const useKeyboard = () => {
         // Clear selections to close UI panels, but KEEP the active building and level context.
         useViewer.getState().setSelection({ selectedIds: [], zoneId: null })
         useEditor.getState().setSelectedReferenceId(null)
-      } else if (e.key === '1' && !e.metaKey && !e.ctrlKey) {
-        e.preventDefault()
-        useEditor.getState().setPhase('site')
-        useEditor.getState().setMode('select')
-      } else if (e.key === '2' && !e.metaKey && !e.ctrlKey) {
-        e.preventDefault()
-        useEditor.getState().setPhase('structure')
-        useEditor.getState().setMode('select')
-      } else if (e.key === '3' && !e.metaKey && !e.ctrlKey) {
-        e.preventDefault()
-        useEditor.getState().setPhase('frame')
-        useEditor.getState().setMode('select')
-      } else if (e.key === '4' && !e.metaKey && !e.ctrlKey) {
-        e.preventDefault()
-        useEditor.getState().setPhase('furnish')
-        useEditor.getState().setMode('select')
+      } else if (e.key >= '1' && e.key <= '9' && !e.metaKey && !e.ctrlKey) {
+        // Select floor (level) by number — 1 = first floor, 2 = second, etc.
+        const floorIndex = parseInt(e.key, 10) - 1
+        const { buildingId } = useViewer.getState().selection
+        if (buildingId) {
+          const building = useScene.getState().nodes[buildingId]
+          if (building && building.type === 'building' && floorIndex < building.children.length) {
+            e.preventDefault()
+            useViewer.getState().setSelection({ levelId: building.children[floorIndex] as any })
+          }
+        }
       } else if (e.key === 's' && !e.metaKey && !e.ctrlKey) {
         e.preventDefault()
         useEditor.getState().setPhase('structure')
@@ -46,9 +41,6 @@ export const useKeyboard = () => {
       } else if (e.key === 'r' && !e.metaKey && !e.ctrlKey) {
         e.preventDefault()
         useEditor.getState().setPhase('frame')
-      } else if (e.key === 'f' && !e.metaKey && !e.ctrlKey) {
-        e.preventDefault()
-        useEditor.getState().setPhase('furnish')
       } else if (e.key === 'z' && !e.metaKey && !e.ctrlKey) {
         e.preventDefault()
         useEditor.getState().setPhase('structure')

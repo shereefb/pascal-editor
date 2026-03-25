@@ -82,6 +82,12 @@ User input (pointer/keyboard)
 
 ---
 
+## Gotchas
+
+- **Rebuild viewer after source changes.** The `packages/viewer` package is consumed via its pre-built `dist/` output (`"main": "./dist/index.js"`). Editing source files in `packages/viewer/src/` does NOT change runtime behavior — you must run `tsc --build` in `packages/viewer/` to recompile `dist/`. TypeScript source checks will pass even when `dist/` is stale, so always rebuild after modifying viewer source.
+
+---
+
 ## Tech Stack
 
 | Layer | Technology |

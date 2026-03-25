@@ -238,6 +238,9 @@ const useEditor = create<EditorState>()(
 
         set({ phase })
 
+        // Sync phase to viewer store so selection manager can filter by phase
+        useViewer.getState().setActivePhase(phase)
+
         const { mode, structureLayer } = get()
 
         if (mode === 'build') {
