@@ -67,7 +67,15 @@ type NodeConfig = {
 
 type NodeType = keyof NodeConfig
 
+// Frame element types — these are leaf nodes whose events should not bubble
+// up through the Three.js scene graph to parent meshes (walls, levels, buildings)
+const FRAME_TYPES = new Set<string>([
+  'post', 'beam', 'header', 'joist', 'shear-wall', 'bracing', 'hold-down',
+])
+
 export function useNodeEvents<T extends NodeType>(node: NodeConfig[T]['node'], type: T) {
+  const isFrame = FRAME_TYPES.has(type)
+
   const emit = (suffix: EventSuffix, e: ThreeEvent<PointerEvent>) => {
     const eventKey = `${type}:${suffix}` as `${T}:${EventSuffix}`
     const localPoint = e.object.worldToLocal(e.point.clone())
@@ -87,11 +95,14 @@ export function useNodeEvents<T extends NodeType>(node: NodeConfig[T]['node'], t
     onPointerDown: (e: ThreeEvent<PointerEvent>) => {
       if (useViewer.getState().cameraDragging) return
       if (e.button !== 0) return
+      // Frame elements stop R3F propagation so events don't bubble to walls/levels
+      if (isFrame) e.stopPropagation()
       emit('pointerdown', e)
     },
     onPointerUp: (e: ThreeEvent<PointerEvent>) => {
       if (useViewer.getState().cameraDragging) return
       if (e.button !== 0) return
+      if (isFrame) e.stopPropagation()
       emit('pointerup', e)
       // Synthesize a click event on pointer up to be more forgiving than R3F's default onClick
       // which often fails if the mouse moves even 1 pixel.
@@ -103,14 +114,17 @@ export function useNodeEvents<T extends NodeType>(node: NodeConfig[T]['node'], t
     },
     onPointerEnter: (e: ThreeEvent<PointerEvent>) => {
       if (useViewer.getState().cameraDragging) return
+      if (isFrame) e.stopPropagation()
       emit('enter', e)
     },
     onPointerLeave: (e: ThreeEvent<PointerEvent>) => {
       if (useViewer.getState().cameraDragging) return
+      if (isFrame) e.stopPropagation()
       emit('leave', e)
     },
     onPointerMove: (e: ThreeEvent<PointerEvent>) => {
       if (useViewer.getState().cameraDragging) return
+      if (isFrame) e.stopPropagation()
       emit('move', e)
     },
     onDoubleClick: (e: ThreeEvent<PointerEvent>) => {
